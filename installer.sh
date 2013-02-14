@@ -36,42 +36,46 @@ zfs set checksum=fletcher4 $POOLNAME
 zfs set atime=off $POOLNAME
 
 ### Datasets #######################
-echo "Creating datasets"
+echo -n "Creating datasets "
+zfs_create() {
+	zfs create $*;
+	echo -n .
+}
 R="$POOLNAME/ROOT/$BENAME"  # boot enviroment
 L="$POOLNAME/LOCAL"         # local/shared datasets
 #          _OPTIONS_______________________ _PATH_________________
-zfs create $NOMNT $UTF8ONLY $NODEV         $POOLNAME/ROOT
-zfs create $NOMNT                          $R
-zfs create $DEV                            $R/dev
-zfs create $COMPR   $EXEC   $NOSUID        $R/tmp
-zfs create          $EXEC   $NOSUID        $R/compat
-zfs create $COMPR   $EXEC   $NOSUID        $R/etc
+zfs_create $NOMNT $UTF8ONLY $NODEV         $POOLNAME/ROOT
+zfs_create $NOMNT                          $R
+zfs_create $DEV                            $R/dev
+zfs_create $COMPR   $EXEC   $NOSUID        $R/tmp
+zfs_create          $EXEC   $NOSUID        $R/compat
+zfs_create $COMPR   $EXEC   $NOSUID        $R/etc
 
-zfs create                                 $R/usr
-zfs create $COMPR   $NOEXEC $NOSUID        $R/usr/src
-zfs create                  $NOSUID        $R/usr/obj
-zfs create $COMPR           $NOSUID        $R/usr/ports
-zfs create $NOCOMPR $NOEXEC                $R/usr/ports/distfiles
-zfs create $NOCOMPR $NOEXEC                $R/usr/ports/packages
-zfs create                                 $R/usr/local
-zfs create $COMPR           $NOSUID        $R/usr/local/etc
+zfs_create                                 $R/usr
+zfs_create $COMPR   $NOEXEC $NOSUID        $R/usr/src
+zfs_create                  $NOSUID        $R/usr/obj
+zfs_create $COMPR           $NOSUID        $R/usr/ports
+zfs_create $NOCOMPR $NOEXEC                $R/usr/ports/distfiles
+zfs_create $NOCOMPR $NOEXEC                $R/usr/ports/packages
+zfs_create                                 $R/usr/local
+zfs_create $COMPR           $NOSUID        $R/usr/local/etc
 
-zfs create                                 $R/var
-zfs create          $NOEXEC $NOSUID        $R/var/db
-zfs create $COMPR                          $R/var/db/ports
-zfs create                                 $R/var/db/portsnap
-zfs create $COMPR   $EXEC                  $R/var/db/pkg
-zfs create $COMPR   $NOEXEC $NOSUID        $R/var/crash
-zfs create          $NOEXEC $NOSUID $RO    $R/var/empty
-zfs create $COMPR   $NOEXEC $NOSUID        $R/var/log
-zfs create $COMPR   $NOEXEC $NOSUID $ATIME $R/var/mail
-zfs create          $NOEXEC $NOSUID        $R/var/run
-zfs create $COMPR   $EXEC   $NOSUID        $R/var/tmp
+zfs_create                                 $R/var
+zfs_create          $NOEXEC $NOSUID        $R/var/db
+zfs_create $COMPR                          $R/var/db/ports
+zfs_create                                 $R/var/db/portsnap
+zfs_create $COMPR   $EXEC                  $R/var/db/pkg
+zfs_create $COMPR   $NOEXEC $NOSUID        $R/var/crash
+zfs_create          $NOEXEC $NOSUID $RO    $R/var/empty
+zfs_create $COMPR   $NOEXEC $NOSUID        $R/var/log
+zfs_create $COMPR   $NOEXEC $NOSUID $ATIME $R/var/mail
+zfs_create          $NOEXEC $NOSUID        $R/var/run
+zfs_create $COMPR   $EXEC   $NOSUID        $R/var/tmp
 
-zfs create $NOMNT $UTF8ONLY $NOSUID $NODEV $L
-zfs create                                 $L/home
-zfs create $COMPR   $NOEXEC                $L/home/pub
-zfs create -V $SWAPSIZE \
+zfs_create $NOMNT $UTF8ONLY $NOSUID $NODEV $L
+zfs_create                                 $L/home
+zfs_create $COMPR   $NOEXEC                $L/home/pub
+zfs_create -V $SWAPSIZE \
               -o org.freebsd:swap=on \
               -o checksum=off \
               -o sync=disabled \
@@ -79,7 +83,7 @@ zfs create -V $SWAPSIZE \
               -o secondarycache=none       $L/swap
 
 zpool set bootfs=$R $POOLNAME
+echo " done"
 ### Result #########################
-echo
-echo "$0 finished, results:"
+echo; echo "$0 finished, results:"
 zfs list -t all -o name,compression,exec,setuid,readonly,checksum,utf8only,atime,devices,sync
