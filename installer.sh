@@ -75,15 +75,25 @@ zfs_create $COMPR   $EXEC            $R/var/tmp
 zfs_create $NOMNT           $NOSUID  $L
 zfs_create                           $L/home
 zfs_create $COMPR   $NOEXEC          $L/home/pub
-zfs_create -V $SWAPSIZE \
-           -o org.freebsd:swap=on \
-           -o checksum=off \
-           -o sync=disabled \
-           -o primarycache=none \
-           -o secondarycache=none    $L/swap
+#zfs_create -V $SWAPSIZE \
+#           -o org.freebsd:swap=on \
+#           -o checksum=off \
+#           -o sync=disabled \
+#           -o primarycache=none \
+#           -o secondarycache=none    $L/swap
 
 zpool set bootfs=$R $POOLNAME
 echo " done"
+
+### Mounting #######################
+echo -n "Setting mount properties ";
+zfs set mountpoint=legacy $R;
+zfs list -o name -H | grep "$R/" | while read dataset
+do
+	zfs set mountpoint=none $dataset;
+	echo -n .;
+done
+
 ### Result #########################
 echo; echo "$0 finished, results:"
 zfs list -t all -o \
