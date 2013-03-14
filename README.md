@@ -6,6 +6,7 @@ ZFS dataset paths are compatible with beadm.
 The requirements 
 ----------------
 for running the installer are:
+
 * MBR scheme
 * A free BSD slice
 * a working internet connection
