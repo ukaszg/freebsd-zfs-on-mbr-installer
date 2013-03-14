@@ -18,15 +18,15 @@ L="$POOLNAME/LOCAL"         # local/shared datasets
 	echo "	$0 /dev/ada0s4";
 	exit 1;
 } # }}}
-tmpfree="`df -m /tmp | tail -1 | awk '{ print $3; }'`";
+tmpfree="`df -m $TMP_ROOT | tail -1 | awk '{ print $3; }'`";
 neededspace="150"; # about~ , both in MB
 [ $tmpfree -ge $neededspace ] || { # {{{
-	echo "Your /tmp has only ${tmpfree}MB of free space avaliable,";
+	echo "Your $TMP_ROOT has only ${tmpfree}MB of free space avaliable,";
 	echo "at least ${neededspace}MB is needed for install files.";
 	echo "try:";
-	[ `mount | grep '/tmp ' | wc -l | awk '{ print $1; }'` -eq 1 ] || \
-		echo "	umount -f /tmp";
-	echo "	mount -o size=${neededspace}M -t tmpfs /tmp";
+	[ `mount | grep "$TMP_ROOT " | wc -l | awk '{ print $1; }'` -eq 1 ] || \
+		echo "	umount -f $TMP_ROOT";
+	echo "	mount -o size=${neededspace}M -t tmpfs $TMP_ROOT";
 	exit 1;
 } >&2; # }}}
 # }}}
