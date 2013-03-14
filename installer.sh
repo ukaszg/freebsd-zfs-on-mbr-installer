@@ -303,6 +303,7 @@ chmod +x $TMP_ROOT/fixmounts.sh;
 } # }}}
 umount $TMP_ROOT/dev 2>/dev/null || true;
 chroot $TMP_ROOT /fixmounts.sh;
+rm -f $TMP_ROOT/fixmounts.sh;
 umount_zfs;
 # }}}
 echo All done.
